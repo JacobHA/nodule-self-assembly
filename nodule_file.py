@@ -177,7 +177,7 @@ def main():
 
 
 def delete_files(base_folder, base_dir=r'C:/Users/jacob/OneDrive/Desktop/GitHub/nodule-self-assembly/'):
-    folder = base_dir + base_folder + '/'
+    folder = os.path.join(base_dir, base_folder)
     import os
 
     # Check the directory exists

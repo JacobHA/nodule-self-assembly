@@ -4,7 +4,7 @@ import os
 
 
 def make_gif(subfolder, base_folder=r'C:/Users/Jacob/OneDrive/Desktop/Github/nodule-self-assembly/', fps = 60):
-    folder = base_folder + subfolder 
+    folder = os.path.join(base_folder, subfolder)
     _, _, files = next(os.walk(folder))
     file_count = len(files)
 
@@ -19,12 +19,16 @@ def make_gif(subfolder, base_folder=r'C:/Users/Jacob/OneDrive/Desktop/Github/nod
 
     if file_count > 1:
 
-        filename, start = files[0].split('_')[0], int(files[0].split('_')[1].split('.')[0])
-        spacing = int(files[1].split('_')[1].split('.')[0]) - start
-        end = int(files[-1].split('_')[1].split('.')[0])
+        indices = [int(file.split('_')[1].split('.')[0]) for file in files]
+        start = min(indices)
+        end = max(indices)
+        spacing = int((end - start) / (file_count - 1))
+        name = files[0].split('_')[0]
 
+        def pathname(iternum):
+            return name + '_' + str(iternum) + '.png'
 
-        filenames = [f'{subfolder}/{filename}_{t}.png' for t in range(start, end + 1, spacing) ]
+        filenames = [f'{folder}/{pathname(t)}' for t in range(start, end + 1, spacing) ]
         print(f'Using {len(filenames)} files to make the gif.')
         images = []
         for filename in filenames:
