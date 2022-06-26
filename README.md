@@ -12,7 +12,16 @@ Modelling:
 
 Calculations:
 - Do subgridding / more efficient collision detection
+- Check for collisions across the boundary (we have periodic BCs)
+- Speed up plotting (there seems to be a memory leak with matplotlib multiple figures)
+-[x] Allow cells to grow
+ 
 
 Visualization:
 - Make axis log scale on histogram
 - Remove axes on gif?
+
+
+ ## Dependencies
+ Numpy
+ Matplotlib
