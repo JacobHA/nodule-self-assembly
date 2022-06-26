@@ -1,6 +1,5 @@
 import os
 import matplotlib.pyplot as plt
-import numpy as np
 import time
 
 def make_histogram(nodules,bins=None, save_num=None, scale=1):
@@ -40,7 +39,12 @@ def delete_files(base_folder, base_dir=r'C:/Users/jacob/OneDrive/Desktop/GitHub/
 
     # Check the directory exists
     if not os.path.exists(folder):
-        print('Folder does not exist')
+        print('Folder does not exist. (No files to delete.)')
+        make_new_folder = input(f"Would you like to make a new folder ({base_folder})? (y/n) ").lower()
+        if make_new_folder == 'y':
+            os.mkdir(folder)
+            print(f'Created folder {base_folder}.')
+
         return
 
     _, _, files = next(os.walk(folder))
@@ -48,13 +52,13 @@ def delete_files(base_folder, base_dir=r'C:/Users/jacob/OneDrive/Desktop/GitHub/
 
     # Ask user permission to remove all .png files from the gif saving subfolder:
     if file_count > 0:
-        remove_files = input(f"Remove all .png files from the {base_folder} subfolder? (y/n): ")
+        remove_files = input(f"Remove all .png files from the {base_folder} subfolder? (y/n): ").lower()
         if remove_files == "y":
             for file in files:
                 os.remove(os.path.join(folder, file))
         # otherwise, exit program:
         elif remove_files == "n":
-            create_new_folder = input(f"Create a new folder? (y/n): ")
+            create_new_folder = input(f"Create a new folder? (y/n): ").lower()
             if create_new_folder == "y":
                 new_folder = str(time.time())
                 new_folder_input = input("Enter new folder name. (No input will use current datetime as name): ")
