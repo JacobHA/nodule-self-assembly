@@ -45,4 +45,4 @@ def make_gif(subfolder, base_folder=r'C:/Users/Jacob/OneDrive/Desktop/Github/nod
 
 
 make_gif('histograms', fps=10)
-make_gif('gif_folder', fps=60)
+make_gif('gif_folder', fps=30)

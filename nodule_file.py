@@ -2,24 +2,25 @@
 # which will be used to store the information
 # about the nodules in the set of cancer cells.
 
-from gym import make
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import make_histogram, make_nodule_plot, delete_files
 
-X_LENGTH = 200
-Y_LENGTH = 200
+X_LENGTH = 500
+Y_LENGTH = 500
 Z_LENGTH = 200
 
-LATTICE_SCALE = 10
+LATTICE_SCALE = 1
 DISTANCE_EPSILON = 0.1
 
 class Nodule:
-    def __init__(self, two_dimensional=False):
+    def __init__(self, two_dimensional=False, growth_rate=1):
         self.x = None
         self.y = None
         self.z = None
         self.radius = None
         self.two_dimensional = two_dimensional
+        self.growth_rate = growth_rate
 
         # The maximum movement of the nodule in one timestep
         if self.two_dimensional:
@@ -43,12 +44,12 @@ class Nodule:
             if nodule == self:
                 continue
                 # As a (possible) speed-up, we can check whether
-                #  the distance between the two nodules is more than
+                # the distance between the two nodules is more than
                 # what is possibly acheivable in the next timestep:
                 # Note: this is still overestimating, because they will
                 # likely not be directly in line.
             else:
-                distance = np.linalg.norm(self.position_vector() - nodule.position_vector())
+                distance = np.linalg.norm(self.position_vector - nodule.position_vector)
                 if distance > nodule.radius + self.radius + self.max_movement + nodule.max_movement:
                     # If it is, then we can mask this module to not check on next timestep:
                     isolated_from_nodule[i] = True
@@ -86,7 +87,7 @@ class Nodule:
                 continue
             else:
                 if True: #not self._is_isolated(nodules): #mask[i]:
-                    distance = np.linalg.norm(self.position_vector() - nodule.position_vector())
+                    distance = np.linalg.norm(self.position_vector - nodule.position_vector)
                     if distance < nodule.radius + self.radius:
                         if self.two_dimensional:
                             # conserve area
@@ -106,41 +107,25 @@ class Nodule:
                         else: #if nod_i.radius < nod_j.radius:
                             nodule._update_radius(new_radius)
                             nodules.remove(self)
-
-                    
+        self._grow()
         return nodules
 
+    def _grow(self):
+        # more realistic is randomly dividing the cell
+        if self.two_dimensional:
+            new_area = self.growth_rate * np.pi * self.radius**2 
+            new_radius = np.sqrt(new_area / np.pi)
+        else:
+            new_volume = self.growth_rate * (4/3) * np.pi * self.radius**3
+            new_radius = (new_volume / (4/3) * np.pi)**(1/3)
 
+        self._update_radius(new_radius)
 
+    @property
     def position_vector(self):
         return np.array([self.x, self.y, self.z])
 
 
-def make_histogram(nodules,bins=None, save_num=None):
-    # make a histogram based on size distribution
-
-    radii = [nodule.radius for nodule in nodules]
-
-    plt.figure()
-    plt.hist(radii, bins=bins)
-    if save_num is None:
-        plt.show()
-
-    else:
-        plt.savefig(f'histograms/histogram_{save_num}.png')
-
-def make_nodule_plot(nodules, t):
-    plt.figure(figsize=(10,10))
-    plt.xlim(0, X_LENGTH)
-    plt.ylim(0, Y_LENGTH)
-    for nodule in nodules:
-        circle = plt.Circle((nodule.x, nodule.y), nodule.radius, color='b', alpha=0.8)
-        plt.gca().add_patch(circle)   
-            
-    # Try using cv2 imwrite
-    # or plt.imsave
-    plt.savefig(r'gif_folder/timestep_%d.png' % t)
-    plt.cla()
 
 
 def main():
@@ -149,12 +134,12 @@ def main():
 
     # first, we must generate a field of objects,
     # by randomly assigning each object a position and radius
-    NUM_NODULES = 100
+    NUM_NODULES = 1500
     nodules = []
     for i in range(NUM_NODULES):
         position = np.random.randint(0, X_LENGTH, 3)
         radius = np.abs(np.random.normal(1, 0.5))
-        nodule = Nodule(two_dimensional=True)
+        nodule = Nodule(two_dimensional=True, growth_rate=1.00001)
         nodule._update_position(*position)
         nodule._update_radius(radius)
         nodules.append(nodule)
@@ -168,36 +153,15 @@ def main():
 
             nodules = nodule._timestep(nodules)
 
-                   
+        print(len(nodules), flush=True, end='\r')
+  
         if t % 50 == 0:
             make_nodule_plot(nodules, t)
-        if t % 500 == 0:
-            print(len(nodules))
-            make_histogram(nodules, save_num = t)
+            make_histogram(nodules, save_num = t, scale=(nodules[0].growth_rate)**t)
 
+        if len(nodules) <= 1:
+            break
 
-def delete_files(base_folder, base_dir=r'C:/Users/jacob/OneDrive/Desktop/GitHub/nodule-self-assembly/'):
-    folder = os.path.join(base_dir, base_folder)
-    import os
-
-    # Check the directory exists
-    if not os.path.exists(folder):
-        print('Folder does not exist')
-        return
-
-    _, _, files = next(os.walk(folder))
-    file_count = len(files)
-
-    # Ask user permission to remove all .png files from the gif saving subfolder:
-    if file_count > 0:
-        remove_files = input(f"Remove all .png files from the {base_folder} subfolder? (y/n): ")
-        if remove_files == "y":
-            for file in files:
-                os.remove(folder + file)
-        # otherwise, exit program:
-        else:
-            print("Exiting program...")
-            exit()
 
 if __name__ == "__main__":
     
