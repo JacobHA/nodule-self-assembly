@@ -1,6 +1,15 @@
 import os
 import matplotlib.pyplot as plt
 import time
+import math 
+
+# ?
+# min(vectorlist, key = lambda  compare: sum([(a - b)**2 for a, b in zip(vector1, compare)]) 
+def squared_distance(v1, v2):
+    # square root calculation is expensive, so we keep in "square-space" for comparisons
+    dist = [(a - b)**2 for a, b in zip(v1, v2)]
+    dist = sum(dist)
+    return dist
 
 def make_histogram(nodules,bins=None, save_num=None, scale=1):
     # make a histogram based on size distribution

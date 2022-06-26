@@ -2,9 +2,12 @@
 # which will be used to store the information
 # about the nodules in the set of cancer cells.
 
+import cProfile
 import numpy as np
-import matplotlib.pyplot as plt
-from utils import make_histogram, make_nodule_plot, delete_files
+# from numba import jit
+from utils import make_histogram, make_nodule_plot, delete_files, squared_distance
+from math import sqrt, pow
+
 
 X_LENGTH = 500
 Y_LENGTH = 500
@@ -39,6 +42,7 @@ class Nodule:
         self.radius = radius
 
     def _is_isolated(self, nodules):
+        raise NotImplementedError
         isolated_from_nodule = np.ones(len(nodules), dtype=bool)
         for i, nodule in enumerate(nodules):
             if nodule == self:
@@ -87,8 +91,10 @@ class Nodule:
                 continue
             else:
                 if True: #not self._is_isolated(nodules): #mask[i]:
-                    distance = np.linalg.norm(self.position_vector - nodule.position_vector)
-                    if distance < nodule.radius + self.radius:
+                    # distance = np.linalg.norm(self.position_vector - nodule.position_vector)
+                    distance2 = squared_distance(nodule.position_vector, self.position_vector)
+                  
+                    if distance2 < (nodule.radius + self.radius)**2:
                         if self.two_dimensional:
                             # conserve area
                             total_area = 4 * np.pi * (self.radius**2 + nodule.radius**2)
@@ -123,18 +129,21 @@ class Nodule:
 
     @property
     def position_vector(self):
-        return np.array([self.x, self.y, self.z])
+        return [self.x, self.y, self.z]
 
 
 
 
 def main():
+    
+    delete_files('gif_folder')
+    delete_files('histograms')
     # This effectively defines a short range attractive force
     # between two nodules.
 
     # first, we must generate a field of objects,
     # by randomly assigning each object a position and radius
-    NUM_NODULES = 1500
+    NUM_NODULES = 150
     nodules = []
     for i in range(NUM_NODULES):
         position = np.random.randint(0, X_LENGTH, 3)
@@ -146,7 +155,7 @@ def main():
 
     # Now we need to iterate through the nodules,
     # and check for collisions.
-    for t in range(50_000):
+    for t in range(50):
         # mask = np.ones((NUM_NODULES, NUM_NODULES), dtype=bool)
         # update all of the nodules' positions
         for nodule in nodules:
@@ -156,7 +165,7 @@ def main():
         print(len(nodules), flush=True, end='\r')
   
         if t % 50 == 0:
-            make_nodule_plot(nodules, t)
+            make_nodule_plot(nodules, t, X_LENGTH, Y_LENGTH)
             make_histogram(nodules, save_num = t, scale=(nodules[0].growth_rate)**t)
 
         if len(nodules) <= 1:
@@ -165,7 +174,14 @@ def main():
 
 if __name__ == "__main__":
     
-    delete_files('gif_folder')
-    delete_files('histograms')
-    
+    import pstats
+    profiler = cProfile.Profile()
+    profiler.enable()
     main()
+    profiler.disable()
+    stats = pstats.Stats(profiler).sort_stats('tottime')
+    stats.print_stats()   
+
+    profiler.dump_stats('profile.prof')
+
+    # main()
