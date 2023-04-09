@@ -1,3 +1,4 @@
 /.history*
 *.git*
 /__pycache__*
+*.png
