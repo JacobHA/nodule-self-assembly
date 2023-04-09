@@ -1,14 +1,18 @@
-import numpy as np
-X_LENGTH = 500
-Y_LENGTH = 500
-Z_LENGTH = 200
+# Here we will define the "nodule" class
+# which will be used to store the information
+# about the nodules in the set of cancer cells.
 
-LATTICE_SCALE = 1
-DISTANCE_EPSILON = 0.1
+
+import numpy as np
 
 
 class Nodule:
-    def __init__(self, dimensions: int = 2, growth_rate=1):
+    def __init__(self, dimensions: int = 2, growth_rate=1, x_length=500, y_length=500, z_length=200, lattice_scale=1):
+        self.x_length = x_length
+        self.y_length = y_length
+        self.z_length = z_length
+        self.lattice_scale = lattice_scale
+
         self.x = None
         self.y = None
         self.z = None
@@ -46,16 +50,16 @@ class Nodule:
         else:
             dz = np.random.randint(-1, 2)
 
-        self.x += dx / LATTICE_SCALE
-        self.y += dy / LATTICE_SCALE
-        self.z += dz / LATTICE_SCALE
+        self.x += dx / self.lattice_scale
+        self.y += dy / self.lattice_scale
+        self.z += dz / self.lattice_scale
 
         # Need to impose periodic boundary conditions
         # on the position vector.
 
-        self.x = self.x % X_LENGTH
-        self.y = self.y % Y_LENGTH
-        self.z = self.z % Z_LENGTH
+        self.x = self.x % self.x_length
+        self.y = self.y % self.y_length
+        self.z = self.z % self.z_length
 
         self._grow()
         return

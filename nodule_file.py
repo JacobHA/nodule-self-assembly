@@ -1,14 +1,5 @@
-# Here we will define the "nodule" class
-# which will be used to store the information
-# about the nodules in the set of cancer cells.
-
-import cProfile
-import numpy as np
-from scipy.spatial import KDTree
 from NoduleField import NoduleField
-# from numba import jit
-from utils import make_histogram, make_nodule_plot, delete_files, squared_distance
-from math import sqrt, pow
+from utils import make_histogram, make_nodule_plot, delete_files
 
 
 X_LENGTH = 500
@@ -28,7 +19,7 @@ def main():
 
     # first, we must generate a field of objects,
     # by randomly assigning each object a position and radius
-    NUM_NODULES = 150
+    NUM_NODULES = 300
 
     nodule_field = NoduleField(num_nodules=NUM_NODULES,
                                x_length=X_LENGTH,
@@ -39,15 +30,15 @@ def main():
 
     # Now we need to iterate through the nodules,
     # and check for collisions.
-    for t in range(100):
+    for t in range(50):
         nodule_field.simulate(1)
 
         print(len(nodule_field.nodules))
 
         # if t % 10 == 0:
         make_nodule_plot(nodule_field.nodules, t, X_LENGTH, Y_LENGTH)
-        # make_histogram(nodule_field.nodules, save_num=t, scale=(
-        #     nodules[0].growth_rate)**t)
+        make_histogram(nodule_field.nodules, save_num=t, scale=(
+            nodule_field.nodules[0].growth_rate)**t)
 
         if len(nodule_field.nodules) <= 1:
             break
