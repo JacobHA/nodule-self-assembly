@@ -19,7 +19,7 @@ private:
     int y_length;
     int z_length;
     int lattice_scale;
-    int timestep_;
+    int timestep_ = 0;
     double distance_epsilon;
     bool write_to_file;
     double growth_rate;

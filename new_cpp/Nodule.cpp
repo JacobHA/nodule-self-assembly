@@ -51,14 +51,22 @@ void Nodule::_timestep() {
     // to the current position.
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(-1, 1);
+    // std::uniform_int_distribution<> distrib(-1, 1);
 
-    int dx = distrib(gen);
-    int dy = distrib(gen);
-    int dz;
-    if (dimensions == 3) {
-        dz = distrib(gen);
-    }
+    // int dx = distrib(gen);
+    // int dy = distrib(gen);
+    // int dz;
+    // if (dimensions == 3) {
+    //     dz = distrib(gen);
+    // }
+
+    // Draw a random angle from a uniform distribution between 0 and 2pi
+    std::uniform_real_distribution<> distrib(0, 2*M_PI);
+    double theta = distrib(gen);
+    // Use this to determine the change in x and y
+    double dx = cos(theta) / radius;
+    double dy = sin(theta) / radius;
+    double dz = 0;
 
     this->position[0] += dx / lattice_scale;
     this->position[1] += dy / lattice_scale;

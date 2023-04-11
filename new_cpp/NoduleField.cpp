@@ -31,7 +31,8 @@ NoduleField::NoduleField(int dimensions, int num_nodules, int x_length, int y_le
     for (int i = 0; i < this->num_nodules; i++) {
         double position[3] = {static_cast<double>(rand() % this->x_length), static_cast<double>(rand() % this->y_length), static_cast<double>(rand() % this->z_length)};
 
-        double radius = dist(rng);
+        double radius_epsilon = 0.001;
+        double radius = dist(rng) + radius_epsilon;
 
         Nodule nodule(this->dimensions, 
                     this->growth_rate,
@@ -162,8 +163,12 @@ void NoduleField::_write_nodules_to_file(const std::string& filename) const {
     for (const auto& nodule : nodules_) {
         const auto& pos = nodule.get_position();
         double radius = nodule.get_radius();
-
-        outfile << pos[0] << "," << pos[1] << "," << pos[2] << "," << radius << std::endl;
+        if (dimensions == 2) {
+            outfile << pos[0] << "," << pos[1] << "," << radius << std::endl;
+        }
+        if (dimensions == 3) {
+            outfile << pos[0] << "," << pos[1] << "," << pos[2] << "," << radius << std::endl;
+        }
     }
 
     // Close file
