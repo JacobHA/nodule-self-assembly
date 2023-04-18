@@ -4,11 +4,19 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
-#include "nodule.h"
+#include "Nodule.h"
 
 class NoduleField {
 public:
-    NoduleField(int num_nodules, double x_length, double y_length, double lattice_scale, double distance_epsilon, bool write_to_file=false, double growth_rate=0.0001);
+    NoduleField(int num_nodules, 
+                double x_length, 
+                double y_length, 
+                double lattice_scale, 
+                double distance_epsilon, 
+                bool write_to_file=false, 
+                double growth_rate=0.000,
+                bool verbose=false);
+
     std::vector<Nodule> nodules_;
     void simulate(int num_timesteps);
 
@@ -25,6 +33,7 @@ private:
     double distance_epsilon;
     bool write_to_file;
     double growth_rate;
+    bool verbose;
 
     std::vector<int> removable_nodule_indices_;
     

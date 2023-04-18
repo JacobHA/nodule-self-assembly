@@ -3,7 +3,7 @@
 
 class Nodule {
 public:
-    Nodule(double _growth_rate, double x_length, double y_length, double lattice_scale);
+    Nodule(double _growth_rate, double x_length, double y_length, double lattice_scale, bool verbose=false);
 
     void _timestep();
     
@@ -11,6 +11,7 @@ public:
     double* position;
     double lattice_scale;
     double max_movement;
+    bool verbose;
 
     // Getters:
     double* get_position() const { return position; }

@@ -9,8 +9,8 @@ g++ -c main.cpp -o main.o
 g++ Nodule.o NoduleField.o main.o -o program
 
 # Run the program
-./program
+# ./program
 
-# Activate conda environment
-source activate oshenv
-python giffy.py
+# # Activate conda environment
+# source activate oshenv
+# python giffy.py

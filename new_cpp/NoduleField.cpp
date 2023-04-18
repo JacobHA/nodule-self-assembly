@@ -13,7 +13,7 @@
 #include "Nodule.h"
 #include "NoduleField.h"
 
-NoduleField::NoduleField(int num_nodules, double x_length, double y_length, double lattice_scale, double distance_epsilon, bool write_to_file, double growth_rate) {
+NoduleField::NoduleField(int num_nodules, double x_length, double y_length, double lattice_scale, double distance_epsilon, bool write_to_file, double growth_rate, bool verbose) {
     this->num_nodules = num_nodules;
     this->x_length = x_length;
     this->y_length = y_length;
@@ -21,6 +21,7 @@ NoduleField::NoduleField(int num_nodules, double x_length, double y_length, doub
     this->distance_epsilon = distance_epsilon;
     this->growth_rate = growth_rate;
     this->write_to_file = write_to_file;
+    this->verbose = verbose;
 
     double mu = 1.0;
     std::exponential_distribution<double> dist(1.0 / mu);
@@ -42,21 +43,26 @@ NoduleField::NoduleField(int num_nodules, double x_length, double y_length, doub
 
         double x_0 = dist2(rng) * x_length;
         double y_0 = dist2(rng) * y_length;
-        std::cout << "x_0: " << x_0 << std::endl;
-        std::cout << "y_0: " << y_0 << std::endl;
+        if (verbose){
+            std::cout << "x_0: " << x_0 << std::endl;
+            std::cout << "y_0: " << y_0 << std::endl;
+        }
         nodule.set_position(x_0, y_0);
         nodule.set_radius(radius);
 
         nodules_.push_back(nodule);
     }
-    std::cout << "Finished initializing " << get_num_nodules() << "/" << this->num_nodules << " nodules." << std::endl;
-
+    if (verbose){
+        std::cout << "Finished initializing " << get_num_nodules() << "/" << this->num_nodules << " nodules." << std::endl;
+    }
     if (write_to_file){
         // Delete all files in the data directory.
-        std::cout << "Deleting all files in the data directory." << std::endl;
+        if (verbose){
+            std::cout << "Deleting all files in the data directory." << std::endl;
+        }
         std::string win_command = "del data\\*";
         std::string lin_command = "rm data/*";
-        system(win_command.c_str());
+        system(lin_command.c_str());
     }
 }
 
@@ -92,7 +98,6 @@ void NoduleField::_resolve_collision(Nodule& nodule1, Nodule& nodule2, int idx2)
         (std::pow(nodule1.get_radius(), 2) +
         std::pow(nodule2.get_radius(), 2))
                               );
-    std::cout << "Combined radius: " << combined_radius << std::endl;
     nodule1.set_radius(combined_radius);
 
     // remove the absorbed nodule from the list of nodules
@@ -128,8 +133,10 @@ void NoduleField::_destroy_nodules(std::vector<int>& indx_list) {
     indx_list.clear();
 
     // Print how many nodules were removed and how many are left
-    std::cout << "Removed " << num_removed << " nodules." << std::endl;
-    std::cout << "There are " << get_num_nodules() << " nodules left." << std::endl;
+    if (verbose) {
+        std::cout << "Removed " << num_removed << " nodules." << std::endl;
+        std::cout << "There are " << get_num_nodules() << " nodules left." << std::endl;
+    }
 }
 
 void NoduleField::_absorb_collisions() {
@@ -180,7 +187,9 @@ void NoduleField::_write_nodules_to_file(const std::string& filename) const {
     // Check if file exists
     std::ifstream infile(filename);
     if (infile.good()) {
-        std::cerr << "File " << filename << " already exists." << std::endl;
+        if (verbose){
+            std::cerr << "File " << filename << " already exists." << std::endl;
+        }
         infile.close();
     }
  
