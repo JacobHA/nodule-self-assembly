@@ -4,7 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
-#include "nodule.h"
+#include "Nodule.h"
 
 class NoduleField {
 public:
