@@ -61,10 +61,20 @@ NoduleField::NoduleField(int num_nodules, double x_length, double y_length, doub
 }
 
 bool NoduleField::_check_collision(Nodule nodule1, Nodule nodule2) {
+    // First, need to modulo by the length of the field to account for periodic boundary conditions.
+    double x1 = nodule1.get_position()[0];
+    double y1 = nodule1.get_position()[1];
+    double x2 = nodule2.get_position()[0];
+    double y2 = nodule2.get_position()[1];
+
+    // Use the Nodule modrem method
+    double x1_mod = nodule1.modrem(x1, x_length);
+    double y1_mod = nodule1.modrem(y1, y_length);
+    double x2_mod = nodule2.modrem(x2, x_length);
+    double y2_mod = nodule2.modrem(y2, y_length);
+
     double distance = std::sqrt(
-        std::pow(nodule1.get_position()[0] - nodule2.get_position()[0], 2) +
-        std::pow(nodule1.get_position()[1] - nodule2.get_position()[1], 2)
-                                );
+        std::pow(x1_mod - x2_mod, 2) + std::pow(y1_mod - y2_mod, 2));
     return distance <= (nodule1.get_radius() + nodule2.get_radius() + distance_epsilon);
 }
 
@@ -145,12 +155,12 @@ void NoduleField::_timestep() {
     _absorb_collisions();
 
     // Find the total area present in the field
-    double total_area_ = 0;
-    for (auto& nodule : nodules_) {
-        total_area_ += nodule.get_area();
-    }
+    // double total_area_ = 0;
+    // for (auto& nodule : nodules_) {
+    //     total_area_ += nodule.get_area();
+    // }
     // print the total area
-    std::cout << "Total area: " << total_area_ << std::endl;
+    // std::cout << "Total area: " << total_area_ << std::endl;
 }
 
 void NoduleField::simulate(int num_timesteps) {

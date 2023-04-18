@@ -43,13 +43,14 @@ public:
 
         return (equal_pos && equal_radius);
     }
+    double modrem(double a, double N);
+
     virtual ~Nodule();
 
 
 private:
 
     void _grow();
-    double modrem(double a, double N);
 
     double _growth_rate;
     double x_length;
