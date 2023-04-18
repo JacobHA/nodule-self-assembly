@@ -30,7 +30,7 @@ NoduleField::NoduleField(int num_nodules, double x_length, double y_length, doub
     for (int i = 0; i < this->num_nodules; i++) {
 
         double radius_epsilon = 0.00;
-        double radius = dist(rng) + radius_epsilon;
+        double radius = 0.1; //* dist(rng) + radius_epsilon;
 
         Nodule nodule(this->growth_rate,
                       this->x_length, 
@@ -71,8 +71,12 @@ bool NoduleField::_check_collision(Nodule nodule1, Nodule nodule2) {
 void NoduleField::_resolve_collision(Nodule& nodule1, Nodule& nodule2, int idx2) {
     // combine nodules into one by updating its position and radius
     double combined_radius;
-    double combined_position[2] = {(nodule1.get_position()[0] + nodule2.get_position()[0]) / 2,
-                                   (nodule1.get_position()[1] + nodule2.get_position()[1]) / 2};
+    double weight = nodule1.get_area() / (nodule1.get_area() + nodule2.get_area());
+
+    double combined_position[2] = {weight * nodule1.get_position()[0] + (1 - weight) * nodule2.get_position()[0],
+                                   weight * nodule1.get_position()[1] + (1 - weight) * nodule2.get_position()[1]};
+
+    // Weight the combined_position to the COM
     nodule1.set_position(combined_position[0], combined_position[1]);
     combined_radius = std::sqrt(
         (std::pow(nodule1.get_radius(), 2) +
