@@ -8,14 +8,14 @@
 
 #include "Nodule.h"
 
-Nodule::Nodule(double _growth_rate, double x_length, double y_length, double lattice_scale) {
+Nodule::Nodule(double _growth_rate, double x_length, double y_length, double lattice_scale, bool verbose) {
     this->x_length = x_length;
     this->y_length = y_length;
     this->lattice_scale = lattice_scale;
     this->_growth_rate = _growth_rate;
-
     this->position = new double[dimensions];
     this->radius = 0;
+    this->verbose = verbose;
 }
 
 void Nodule::set_position(double x, double y) {
