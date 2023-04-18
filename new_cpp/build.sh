@@ -10,3 +10,7 @@ g++ Nodule.o NoduleField.o main.o -o program
 
 # Run the program
 ./program
+
+# Activate conda environment
+source activate oshenv
+python giffy.py

@@ -8,17 +8,19 @@
 
 class NoduleField {
 public:
-    NoduleField(int dimensions, int num_nodules, int x_length, int y_length, int z_length, int lattice_scale, double distance_epsilon, bool write_to_file=false, double growth_rate=0.0001);
+    NoduleField(int num_nodules, double x_length, double y_length, double lattice_scale, double distance_epsilon, bool write_to_file=false, double growth_rate=0.0001);
     std::vector<Nodule> nodules_;
     void simulate(int num_timesteps);
-    int get_num_nodules() const;
+
+    // Getters
+    int get_num_nodules() const { return nodules_.size(); }
+
 private:
-    int dimensions;
+    int dimensions = 2;
     int num_nodules;
-    int x_length;
-    int y_length;
-    int z_length;
-    int lattice_scale;
+    double x_length;
+    double y_length;
+    double lattice_scale;
     int timestep_ = 0;
     double distance_epsilon;
     bool write_to_file;
@@ -30,7 +32,7 @@ private:
     void _resolve_collision(Nodule& nodule1, Nodule& nodule2, int idx2);
     void _destroy_nodules(std::vector<int>& indx_list);
     void _garbage_collect_nodule(int idx);
-    void absorb_collisions();
+    void _absorb_collisions();
     void _timestep();
     void _write_nodules_to_file(const std::string& filename) const;
 };
